@@ -1,5 +1,7 @@
 #include "main.h"
 
+void print_buffer(char buffer[], int *buff_ind);
+
 /**
  * _printf - Custom printf function
  * @format: Format string
@@ -27,7 +29,7 @@ int _printf(const char *format, ...)
             if (*format == 'c')
             {
                 char c = va_arg(args, int);
-                putchar(c);
+                print_buffer(c);
                 count++;
             }
             else if (*format == 's')
@@ -37,20 +39,20 @@ int _printf(const char *format, ...)
                     str = "(null)";
                 while (*str)
                 {
-                    putchar(*str);
+                    print_buffer(*str);
                     str++;
                     count++;
                 }
             }
             else if (*format == '%')
             {
-                putchar('%');
+                print_buffer('%');
                 count++;
             }
             else
             {
-                putchar('%');
-                putchar(*format);
+                print_buffer('%');
+                print_buffer(*format);
                 count += 2;
             }
         }
@@ -66,3 +68,17 @@ int _printf(const char *format, ...)
 
     return (count);
 }
+
+/**
+ * print_buffer - Prints the contents of the buffer if it exist
+ * @buffer: Array of chars
+ * @buff_ind: Index at which to add next char, represents the length.
+ */
+void print_buffer(char buffer[], int *buff_ind)
+{
+	if (*buff_ind > 0)
+		write(1, &buffer[0], *buff_ind);
+
+	*buff_ind = 0;
+}
+
