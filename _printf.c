@@ -1,66 +1,111 @@
 #include "main.h"
 
+/**
+ * struct FormatSpec - Structure to store format specifier information.
+ * @flags: Flags (e.g., '-', '+', '0').
+ * @width: Minimum field width.
+ * @precision: Precision for integers and strings.
+ * @size: Length modifier (e.g., 'h', 'l', 'L').
+ */
+typedef struct FormatSpec
+{
+    int flags;
+    int width;
+    int precision;
+    int size;
+} FormatSpec;
+
+/**
+ * print_buffer - Prints the contents of the buffer.
+ * @buffer: Array of characters.
+ * @buff_ind: Index at which to add the next character, represents the length.
+ */
 void print_buffer(char buffer[], int *buff_ind);
 
 /**
- * _printf - Printf function
- * @format: format.
- * Return: Printed chars.
+ * _printf - Custom printf function.
+ * @format: Format string.
+ * Return: Number of characters printed.
  */
 int _printf(const char *format, ...)
 {
-	int i, printed = 0, printed_chars = 0;
-	int flags, width, precision, size, buff_ind = 0;
-	va_list list;
-	char buffer[BUFF_SIZE];
+    if (format == NULL)
+        return (-1);
 
-	if (format == NULL)
-		return (-1);
+    va_list args;
+    va_start(args, format);
 
-	va_start(list, format);
+    char buffer[BUFF_SIZE];
+    int buff_ind = 0;
+    int printed_chars = 0;
 
-	for (i = 0; format && format[i] != '\0'; i++)
-	{
-		if (format[i] != '%')
-		{
-			buffer[buff_ind++] = format[i];
-			if (buff_ind == BUFF_SIZE)
-				print_buffer(buffer, &buff_ind);
-			/* write(1, &format[i], 1);*/
-			printed_chars++;
-		}
-		else
-		{
-			print_buffer(buffer, &buff_ind);
-			flags = get_flags(format, &i);
-			width = get_width(format, &i, list);
-			precision = get_precision(format, &i, list);
-			size = get_size(format, &i);
-			++i;
-			printed = handle_print(format, &i, list, buffer,
-				flags, width, precision, size);
-			if (printed == -1)
-				return (-1);
-			printed_chars += printed;
-		}
-	}
+    for (const char *p = format; *p; ++p)
+    {
+        if (*p != '%')
+        {
+            buffer[buff_ind++] = *p;
+            if (buff_ind == BUFF_SIZE)
+                print_buffer(buffer, &buff_ind);
+            ++printed_chars;
+        }
+        else
+       {
+            FormatSpec spec;
+            p = parse_format(p, &spec);
+            if (!p)
+                return (-1);
 
-	print_buffer(buffer, &buff_ind);
+            int printed = handle_format(&spec, args, buffer, &buff_ind);
+            if (printed == -1)
+                return (-1);
+            printed_chars += printed;
+        }
+    }
 
-	va_end(list);
+    print_buffer(buffer, &buff_ind);
+    va_end(args);
 
-	return (printed_chars);
+    return (printed_chars);
 }
 
 /**
- * print_buffer - Prints the contents of the buffer if it exist
- * @buffer: Array of chars
- * @buff_ind: Index at which to add next char, represents the length.
+ * parse_format - Parse the format specifier and update the FormatSpec struct.
+ * @p: Pointer to the format string.
+ * @spec: Pointer to the FormatSpec struct to update.
+ * Return: Pointer to the character after the format specifier.
+ */
+const char *parse_format(const char *p, FormatSpec *spec)
+{
+    // Implement the logic to parse flags, width, precision, and size
+    // Update spec accordingly
+    // Return the pointer after the format specifier
+}
+
+/**
+ * handle_format - Handle the format specifier and write the formatted content to buffer.
+ * @spec: Pointer to the FormatSpec struct containing format information.
+ * @args: va_list of arguments.
+ * @buffer: Array of characters to write to.
+ * @buff_ind: Pointer to the buffer index.
+ * Return: The number of characters printed.
+ */
+int handle_format(const FormatSpec *spec, va_list args, char buffer[], int *buff_ind)
+{
+    // Implement logic to handle the format specifier
+    // Write the formatted content to buffer and update buff_ind
+    // Return the number of characters printed
+}
+
+/**
+ * print_buffer - Prints the contents of the buffer if it exists.
+ * @buffer: Array of characters.
+ * @buff_ind: Pointer to the buffer index, represents the length.
  */
 void print_buffer(char buffer[], int *buff_ind)
 {
-	if (*buff_ind > 0)
-		write(1, &buffer[0], *buff_ind);
-
-	*buff_ind = 0;
+    if (*buff_ind > 0)
+    {
+        write(1, buffer, *buff_ind);
+        *buff_ind = 0;
+    }
 }
