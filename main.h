@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #define BUFF_SIZE 1024
+#define BUF_FLUSH -1
 
 /* Function prototype for _printf */
 int _printf(const char *format, ...);
